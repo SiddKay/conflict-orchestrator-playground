@@ -125,7 +125,7 @@ export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSele
   );
 
   return (
-    <div className="h-full bg-slate-900/50 backdrop-blur-sm">
+    <div className="h-full">
       <div className="p-4 border-b border-slate-700/50">
         <div className="flex items-center gap-2 mb-2">
           <Users size={18} className="text-blue-400" />
