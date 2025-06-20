@@ -3,11 +3,14 @@ import { ConversationTree } from '@/components/ConversationTree';
 import { RightSidebar } from '@/components/RightSidebar';
 import { Button } from '@/components/ui/button';
 import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide-react';
+
 const Index = () => {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [simulationStarted, setSimulationStarted] = useState(false);
-  return <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex w-full">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex w-full">
       {/* Left Sidebar - Conversation Tree */}
       <div className={`${leftSidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 overflow-hidden border-r border-slate-700/50`}>
         <ConversationTree simulationStarted={simulationStarted} />
@@ -17,7 +20,12 @@ const Index = () => {
       <div className="flex-1 flex flex-col">
         {/* Header with toggle buttons */}
         <div className="h-16 border-b border-slate-700/50 flex items-center justify-between px-6">
-          <Button variant="ghost" size="sm" onClick={() => setLeftSidebarOpen(!leftSidebarOpen)} className="text-slate-300 hover:text-white hover:bg-slate-700/50">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+            className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+          >
             {leftSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
             {leftSidebarOpen ? 'Hide Tree' : 'Show Tree'}
           </Button>
@@ -26,11 +34,14 @@ const Index = () => {
             <h1 className="font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-lg">
               AI Conflict Simulator
             </h1>
-            
           </div>
 
-          <Button variant="ghost" size="sm" onClick={() => setRightSidebarOpen(!rightSidebarOpen)} className="text-slate-300 hover:text-white hover:bg-slate-700/50">
-            {rightSidebarOpen ? 'Hide Panel' : 'Show Panel'}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
+            className="text-slate-300 hover:text-white hover:bg-slate-700/50"
+          >
             {rightSidebarOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
           </Button>
         </div>
@@ -63,6 +74,8 @@ const Index = () => {
       <div className={`${rightSidebarOpen ? 'w-96' : 'w-0'} transition-all duration-300 overflow-hidden border-l border-slate-700/50`}>
         <RightSidebar simulationStarted={simulationStarted} onSimulationStart={() => setSimulationStarted(true)} />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
