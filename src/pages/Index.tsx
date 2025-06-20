@@ -26,7 +26,7 @@ const Index = () => {
             <h1 className="font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-lg">
               AI Conflict Simulator
             </h1>
-            <p className="text-sm text-slate-400">Simulate and analyze AI agent interactions</p>
+            
           </div>
 
           <Button variant="ghost" size="sm" onClick={() => setRightSidebarOpen(!rightSidebarOpen)} className="text-slate-300 hover:text-white hover:bg-slate-700/50">
