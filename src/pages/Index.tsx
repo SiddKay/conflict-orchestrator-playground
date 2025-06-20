@@ -27,7 +27,6 @@ const Index = () => {
             className="text-slate-300 hover:text-white hover:bg-slate-700/50"
           >
             {leftSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-            {leftSidebarOpen ? 'Hide Tree' : 'Show Tree'}
           </Button>
 
           <div className="text-center">
