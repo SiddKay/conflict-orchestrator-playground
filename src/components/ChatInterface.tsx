@@ -14,22 +14,37 @@ interface Message {
 
 interface ChatInterfaceProps {
   simulationStarted: boolean;
+  selectedNodeId?: string | null;
 }
 
-export const ChatInterface = ({ simulationStarted }: ChatInterfaceProps) => {
+export const ChatInterface = ({ simulationStarted, selectedNodeId }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isUserTurn, setIsUserTurn] = useState(false);
   const [currentAgent, setCurrentAgent] = useState('Alice');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToMessage = (messageId: string) => {
+    const messageElement = messageRefs.current[messageId];
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (selectedNodeId && messageRefs.current[selectedNodeId]) {
+      scrollToMessage(selectedNodeId);
+    }
+  }, [selectedNodeId]);
 
   useEffect(() => {
     if (simulationStarted && messages.length === 0) {
@@ -47,13 +62,17 @@ export const ChatInterface = ({ simulationStarted }: ChatInterfaceProps) => {
     }
   }, [simulationStarted]);
 
-  const getMoodColor = (mood: string) => {
-    switch (mood) {
-      case 'positive': return 'bg-green-500/20 border-green-400/30 text-green-100';
-      case 'negative': return 'bg-red-500/20 border-red-400/30 text-red-100';
-      case 'neutral': return 'bg-yellow-500/20 border-yellow-400/30 text-yellow-100';
-      default: return 'bg-slate-500/20 border-slate-400/30 text-slate-100';
-    }
+  const getMoodColor = (mood: string, isHighlighted: boolean = false) => {
+    const baseColor = (() => {
+      switch (mood) {
+        case 'positive': return 'bg-green-500/20 border-green-400/30 text-green-100';
+        case 'negative': return 'bg-red-500/20 border-red-400/30 text-red-100';
+        case 'neutral': return 'bg-yellow-500/20 border-yellow-400/30 text-yellow-100';
+        default: return 'bg-slate-500/20 border-slate-400/30 text-slate-100';
+      }
+    })();
+    
+    return isHighlighted ? `${baseColor} ring-2 ring-blue-400/50 scale-[1.02]` : baseColor;
   };
 
   const getAgentColor = (agent: string) => {
@@ -121,25 +140,29 @@ export const ChatInterface = ({ simulationStarted }: ChatInterfaceProps) => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`
-              p-3 rounded-lg border transition-all duration-200 hover:scale-[1.01]
-              ${getMoodColor(message.mood)}
-            `}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`font-medium text-sm ${getAgentColor(message.agent)}`}>
-                {message.agent}
+        {messages.map((message) => {
+          const isHighlighted = selectedNodeId === message.id;
+          return (
+            <div
+              key={message.id}
+              ref={(el) => messageRefs.current[message.id] = el}
+              className={`
+                p-3 rounded-lg border transition-all duration-200 hover:scale-[1.01]
+                ${getMoodColor(message.mood, isHighlighted)}
+              `}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`font-medium text-sm ${getAgentColor(message.agent)}`}>
+                  {message.agent}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {message.timestamp.toLocaleTimeString()}
+                </div>
               </div>
-              <div className="text-xs text-slate-500">
-                {message.timestamp.toLocaleTimeString()}
-              </div>
+              <p className="text-sm leading-relaxed">{message.msg}</p>
             </div>
-            <p className="text-sm leading-relaxed">{message.msg}</p>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 

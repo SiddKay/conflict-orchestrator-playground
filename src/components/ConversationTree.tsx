@@ -14,11 +14,12 @@ interface TreeNode {
 
 interface ConversationTreeProps {
   simulationStarted: boolean;
+  selectedNodeId?: string | null;
+  onNodeSelect: (nodeId: string) => void;
 }
 
-export const ConversationTree = ({ simulationStarted }: ConversationTreeProps) => {
+export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSelect }: ConversationTreeProps) => {
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // Mock conversation tree data
   useEffect(() => {
@@ -86,10 +87,10 @@ export const ConversationTree = ({ simulationStarted }: ConversationTreeProps) =
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setSelectedNode(node.id)}
+          onClick={() => onNodeSelect(node.id)}
           className={`
             w-12 h-12 rounded-full border-2 p-0 transition-all duration-200 text-white font-bold text-sm
-            ${selectedNode === node.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
+            ${selectedNodeId === node.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
             ${getMoodColor(node.mood)}
             hover:scale-105 hover:shadow-lg
           `}

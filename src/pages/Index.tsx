@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ConversationTree } from '@/components/ConversationTree';
 import { RightSidebar } from '@/components/RightSidebar';
@@ -8,12 +9,21 @@ const Index = () => {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [simulationStarted, setSimulationStarted] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
+  const handleNodeSelect = (nodeId: string) => {
+    setSelectedNodeId(nodeId);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex w-full">
       {/* Left Sidebar - Conversation Tree */}
       <div className={`${leftSidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 overflow-hidden border-r border-slate-700/50`}>
-        <ConversationTree simulationStarted={simulationStarted} />
+        <ConversationTree 
+          simulationStarted={simulationStarted} 
+          selectedNodeId={selectedNodeId}
+          onNodeSelect={handleNodeSelect}
+        />
       </div>
 
       {/* Main Content Area */}
@@ -71,7 +81,11 @@ const Index = () => {
 
       {/* Right Sidebar - Setup & Chat */}
       <div className={`${rightSidebarOpen ? 'w-96' : 'w-0'} transition-all duration-300 overflow-hidden border-l border-slate-700/50`}>
-        <RightSidebar simulationStarted={simulationStarted} onSimulationStart={() => setSimulationStarted(true)} />
+        <RightSidebar 
+          simulationStarted={simulationStarted} 
+          onSimulationStart={() => setSimulationStarted(true)}
+          selectedNodeId={selectedNodeId}
+        />
       </div>
     </div>
   );

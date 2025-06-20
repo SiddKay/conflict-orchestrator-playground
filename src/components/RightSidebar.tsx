@@ -8,9 +8,10 @@ import { Settings, MessageSquare } from 'lucide-react';
 interface RightSidebarProps {
   simulationStarted: boolean;
   onSimulationStart: () => void;
+  selectedNodeId?: string | null;
 }
 
-export const RightSidebar = ({ simulationStarted, onSimulationStart }: RightSidebarProps) => {
+export const RightSidebar = ({ simulationStarted, onSimulationStart, selectedNodeId }: RightSidebarProps) => {
   const [activeTab, setActiveTab] = useState('setup');
 
   const handleSimulationStart = () => {
@@ -47,7 +48,7 @@ export const RightSidebar = ({ simulationStarted, onSimulationStart }: RightSide
           </TabsContent>
 
           <TabsContent value="chat" className="h-full m-0">
-            <ChatInterface simulationStarted={simulationStarted} />
+            <ChatInterface simulationStarted={simulationStarted} selectedNodeId={selectedNodeId} />
           </TabsContent>
         </div>
       </Tabs>
