@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Play, Bot } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Play, Bot, Save } from 'lucide-react';
 
 interface SetupFormProps {
   onStart: () => void;
@@ -18,10 +20,22 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
     agentAName: '',
     agentBName: '',
     agentATraits: '',
-    agentBTraits: ''
+    agentBTraits: '',
+    agentAModel: '',
+    agentBModel: '',
+    agentABehavioralInstructions: '',
+    agentBBehavioralInstructions: '',
+    agentATemperature: [0.7],
+    agentBTemperature: [0.7]
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const modelOptions = [
+    'OpenAI GPT 4o',
+    'Magistral Medium',
+    'Gemini 2.5 Flash'
+  ];
+
+  const handleInputChange = (field: string, value: string | number[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -29,6 +43,36 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
     // TODO: Send setup data to API endpoint
     console.log('Starting simulation with data:', formData);
     onStart();
+  };
+
+  const handleSaveEnvironment = () => {
+    // TODO: Connect to API endpoint to save environment settings
+    console.log('Saving environment settings:', {
+      conversationSetting: formData.conversationSetting,
+      scenario: formData.scenario
+    });
+  };
+
+  const handleSaveAgentA = () => {
+    // TODO: Connect to API endpoint to save Agent A configuration
+    console.log('Saving Agent A configuration:', {
+      name: formData.agentAName,
+      traits: formData.agentATraits,
+      model: formData.agentAModel,
+      behavioralInstructions: formData.agentABehavioralInstructions,
+      temperature: formData.agentATemperature[0]
+    });
+  };
+
+  const handleSaveAgentB = () => {
+    // TODO: Connect to API endpoint to save Agent B configuration
+    console.log('Saving Agent B configuration:', {
+      name: formData.agentBName,
+      traits: formData.agentBTraits,
+      model: formData.agentBModel,
+      behavioralInstructions: formData.agentBBehavioralInstructions,
+      temperature: formData.agentBTemperature[0]
+    });
   };
 
   const isFormValid = formData.conversationSetting && formData.scenario && 
@@ -70,6 +114,15 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
                 rows={3}
               />
             </div>
+
+            <Button 
+              onClick={handleSaveEnvironment}
+              size="sm"
+              className="bg-slate-600/80 hover:bg-slate-600 text-slate-200"
+            >
+              <Save size={14} className="mr-2" />
+              Save Environment
+            </Button>
           </CardContent>
         </Card>
 
@@ -93,6 +146,22 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
             </div>
 
             <div>
+              <Label htmlFor="agentAModel" className="text-slate-300 text-xs">Model</Label>
+              <Select value={formData.agentAModel} onValueChange={(value) => handleInputChange('agentAModel', value)}>
+                <SelectTrigger className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200">
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {modelOptions.map((model) => (
+                    <SelectItem key={model} value={model} className="text-slate-200 hover:bg-slate-600">
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
               <Label htmlFor="agentATraits" className="text-slate-300 text-xs">Character Traits</Label>
               <Textarea
                 id="agentATraits"
@@ -103,6 +172,42 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
                 rows={3}
               />
             </div>
+
+            <div>
+              <Label htmlFor="agentABehavioral" className="text-slate-300 text-xs">Behavioral Instructions</Label>
+              <Textarea
+                id="agentABehavioral"
+                placeholder="e.g., Always respond with empathy, avoid aggressive language..."
+                value={formData.agentABehavioralInstructions}
+                onChange={(e) => handleInputChange('agentABehavioralInstructions', e.target.value)}
+                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="agentATemp" className="text-slate-300 text-xs">
+                Temperature: {formData.agentATemperature[0].toFixed(1)}
+              </Label>
+              <Slider
+                id="agentATemp"
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                value={formData.agentATemperature}
+                onValueChange={(value) => handleInputChange('agentATemperature', value)}
+                className="mt-2"
+              />
+            </div>
+
+            <Button 
+              onClick={handleSaveAgentA}
+              size="sm"
+              className="bg-blue-600/80 hover:bg-blue-600 text-blue-100"
+            >
+              <Save size={14} className="mr-2" />
+              Save Agent A
+            </Button>
           </CardContent>
         </Card>
 
@@ -126,6 +231,22 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
             </div>
 
             <div>
+              <Label htmlFor="agentBModel" className="text-slate-300 text-xs">Model</Label>
+              <Select value={formData.agentBModel} onValueChange={(value) => handleInputChange('agentBModel', value)}>
+                <SelectTrigger className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200">
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {modelOptions.map((model) => (
+                    <SelectItem key={model} value={model} className="text-slate-200 hover:bg-slate-600">
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
               <Label htmlFor="agentBTraits" className="text-slate-300 text-xs">Character Traits</Label>
               <Textarea
                 id="agentBTraits"
@@ -136,6 +257,42 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
                 rows={3}
               />
             </div>
+
+            <div>
+              <Label htmlFor="agentBBehavioral" className="text-slate-300 text-xs">Behavioral Instructions</Label>
+              <Textarea
+                id="agentBBehavioral"
+                placeholder="e.g., Be direct and assertive, express frustrations openly..."
+                value={formData.agentBBehavioralInstructions}
+                onChange={(e) => handleInputChange('agentBBehavioralInstructions', e.target.value)}
+                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="agentBTemp" className="text-slate-300 text-xs">
+                Temperature: {formData.agentBTemperature[0].toFixed(1)}
+              </Label>
+              <Slider
+                id="agentBTemp"
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                value={formData.agentBTemperature}
+                onValueChange={(value) => handleInputChange('agentBTemperature', value)}
+                className="mt-2"
+              />
+            </div>
+
+            <Button 
+              onClick={handleSaveAgentB}
+              size="sm"
+              className="bg-purple-600/80 hover:bg-purple-600 text-purple-100"
+            >
+              <Save size={14} className="mr-2" />
+              Save Agent B
+            </Button>
           </CardContent>
         </Card>
 
