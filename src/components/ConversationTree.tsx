@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Users, ArrowDown, GitBranch } from 'lucide-react';
+import { useConversationContext } from '@/contexts/ConversationContext';
+import { ConversationNode, MoodEnum } from '@/types/models';
 
 interface TreeNode {
   id: string;
-  message: string;
-  agent: string;
-  mood: 'positive' | 'neutral' | 'negative';
+  node: ConversationNode;
   children: TreeNode[];
-  parent?: string;
 }
 interface ConversationTreeProps {
   simulationStarted: boolean;
@@ -20,96 +19,138 @@ export const ConversationTree = ({
   selectedNodeId,
   onNodeSelect
 }: ConversationTreeProps) => {
+  const { conversationTree, selectNode, branchFromNode } = useConversationContext();
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
+  const [isBranching, setIsBranching] = useState(false);
 
-  // Mock conversation tree data
+  // Build tree structure from conversation nodes
   useEffect(() => {
-    if (simulationStarted) {
-      // TODO: Replace with API call to fetch conversation tree
-      const mockTree: TreeNode[] = [{
-        id: '1',
-        message: "I think we should try that new Italian place for our anniversary dinner.",
-        agent: 'Alice',
-        mood: 'positive',
-        children: [{
-          id: '2',
-          message: "Italian again? We always go Italian. Can't we try something different for once?",
-          agent: 'Bob',
-          mood: 'negative',
-          children: [{
-            id: '3',
-            message: "I suggested it because I know you love pasta. I was trying to be thoughtful.",
-            agent: 'Alice',
-            mood: 'neutral',
-            children: [{
-              id: '4',
-              message: "You're right, I'm sorry. I appreciate the thought.",
-              agent: 'Bob',
-              mood: 'positive',
-              children: []
-            }]
-          }]
-        }]
-      }];
-      setTreeData(mockTree);
+    if (conversationTree && conversationTree.nodes) {
+      const buildTree = (nodeId: string): TreeNode | null => {
+        const node = conversationTree.nodes[nodeId];
+        if (!node) return null;
+
+        const children = node.children
+          .map(childId => buildTree(childId))
+          .filter((child): child is TreeNode => child !== null);
+
+        return {
+          id: node.id,
+          node,
+          children
+        };
+      };
+
+      const trees = conversationTree.root_nodes
+        .map(rootId => buildTree(rootId))
+        .filter((tree): tree is TreeNode => tree !== null);
+
+      setTreeData(trees);
     }
-  }, [simulationStarted]);
-  const handleBranch = () => {
-    console.log('Branch button clicked');
-    // TODO: Implement branching logic
+  }, [conversationTree]);
+  const handleBranch = async () => {
+    if (!selectedNodeId) return;
+    
+    setIsBranching(true);
+    try {
+      await branchFromNode(selectedNodeId);
+      // The chat interface will automatically update based on the new current path
+    } catch (error) {
+      console.error('Failed to branch:', error);
+    } finally {
+      setIsBranching(false);
+    }
   };
-  const getMoodColor = (mood: string) => {
+  const getMoodColor = (mood: MoodEnum) => {
     switch (mood) {
-      case 'positive':
+      case 'happy':
+      case 'excited':
         return 'bg-green-500 border-green-400';
-      case 'negative':
+      case 'angry':
+      case 'frustrated':
         return 'bg-red-500 border-red-400';
+      case 'sad':
+        return 'bg-blue-500 border-blue-400';
       case 'neutral':
+      case 'calm':
         return 'bg-yellow-500 border-yellow-400';
       default:
         return 'bg-slate-500 border-slate-400';
     }
   };
-  const getArrowColor = (mood: string) => {
+  const getArrowColor = (mood: MoodEnum) => {
     switch (mood) {
-      case 'positive':
+      case 'happy':
+      case 'excited':
         return 'text-green-400';
-      case 'negative':
+      case 'angry':
+      case 'frustrated':
         return 'text-red-400';
+      case 'sad':
+        return 'text-blue-400';
       case 'neutral':
+      case 'calm':
         return 'text-yellow-400';
       default:
         return 'text-slate-400';
     }
   };
-  const renderNode = (node: TreeNode, level: number = 0) => <div key={node.id} className="flex flex-col items-center">
-      {/* Circular Node */}
-      <div className="flex flex-col items-center">
-        <Button variant="ghost" size="sm" onClick={() => onNodeSelect(node.id)} className={`
-            w-12 h-12 rounded-full border-2 p-0 transition-all duration-200 text-white font-bold text-sm
-            ${selectedNodeId === node.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
-            ${getMoodColor(node.mood)}
-            hover:scale-105 hover:shadow-lg
-          `}>
-          {node.id}
-        </Button>
-        
-        {/* Agent Label */}
-        <span className="text-xs text-slate-400 mt-1">{node.agent}</span>
-      </div>
+  const renderNode = (treeNode: TreeNode, level: number = 0) => {
+    const handleNodeClick = () => {
+      onNodeSelect(treeNode.id);
+      selectNode(treeNode.id);
+      
+      // Scroll the chat interface to this message
+      const messageElement = document.querySelector(`[data-message-id="${treeNode.node.message.id}"]`);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
 
-      {/* Arrow and Children */}
-      {node.children.length > 0 && <div className="flex flex-col items-center mt-2">
-          <ArrowDown size={16} className={`${getArrowColor(node.children[0]?.mood || 'neutral')} mb-2`} />
+    // Get agent name from the conversation setup
+    const agentName = conversationTree?.setup.agent_a.id === treeNode.node.message.agent_id 
+      ? conversationTree.setup.agent_a.name 
+      : conversationTree?.setup.agent_b.name || 'Unknown';
+
+    return (
+      <div key={treeNode.id} className="flex flex-col items-center">
+        {/* Circular Node */}
+        <div className="flex flex-col items-center">
+          <Button variant="ghost" size="sm" onClick={handleNodeClick} className={`
+              w-12 h-12 rounded-full border-2 p-0 transition-all duration-200 text-white font-bold text-sm
+              ${selectedNodeId === treeNode.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
+              ${getMoodColor(treeNode.node.message.mood)}
+              hover:scale-105 hover:shadow-lg
+            `}>
+            {level + 1}
+          </Button>
           
-          {/* Multiple children - branch layout */}
-          {node.children.length > 1 ? <div className="flex gap-8">
-              {node.children.map(child => <div key={child.id} className="flex flex-col items-center">
-                  {renderNode(child, level + 1)}
-                </div>)}
-            </div> : renderNode(node.children[0], level + 1)}
-        </div>}
-    </div>;
+          {/* Agent Label */}
+          <span className="text-xs text-slate-400 mt-1">{agentName}</span>
+        </div>
+
+        {/* Arrow and Children */}
+        {treeNode.children.length > 0 && (
+          <div className="flex flex-col items-center mt-2">
+            <ArrowDown size={16} className={`${getArrowColor(treeNode.children[0]?.node.message.mood || 'neutral')} mb-2`} />
+            
+            {/* Multiple children - branch layout */}
+            {treeNode.children.length > 1 ? (
+              <div className="flex gap-8">
+                {treeNode.children.map(child => (
+                  <div key={child.id} className="flex flex-col items-center">
+                    {renderNode(child, level + 1)}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              renderNode(treeNode.children[0], level + 1)
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
   return (
     <div className="h-full flex flex-col">
       <div className="flex-1 p-6 overflow-auto">
@@ -140,9 +181,14 @@ export const ConversationTree = ({
       {/* Branch Button at Bottom */}
       {simulationStarted && (
         <div className="p-4 border-t border-slate-700/50 flex-shrink-0">
-          <Button onClick={handleBranch} className="w-full bg-green-600/80 hover:bg-green-600 text-green-100" size="sm">
+          <Button 
+            onClick={handleBranch} 
+            disabled={!selectedNodeId || isBranching}
+            className="w-full bg-green-600/80 hover:bg-green-600 text-green-100 disabled:opacity-50 disabled:cursor-not-allowed" 
+            size="sm"
+          >
             <GitBranch size={16} className="mr-2" />
-            Branch
+            {isBranching ? 'Branching...' : 'Branch'}
           </Button>
         </div>
       )}

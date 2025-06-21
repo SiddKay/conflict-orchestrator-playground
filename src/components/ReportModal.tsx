@@ -6,37 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Download, TrendingUp, TrendingDown, MessageSquare, BarChart3 } from 'lucide-react';
-
-interface EscalationPoint {
-  from_index: string;
-  to_index: string;
-  from_mood: string;
-  to_mood: string;
-  message: string;
-}
-
-interface MoodProgression {
-  message_index: string;
-  agent_id: string;
-  mood: string;
-  snippet: string;
-}
-
-interface ReportData {
-  conversation_id: string;
-  total_messages: number;
-  escalation_points: EscalationPoint[];
-  de_escalation_points: EscalationPoint[];
-  mood_progression: MoodProgression[];
-  summary: string;
-  suggestions: string[];
-  analysis_markdown: string;
-}
+import { ConversationAnalysis } from '@/types/models';
 
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  reportData: ReportData | null;
+  reportData: ConversationAnalysis | null;
   isLoading: boolean;
 }
 
@@ -45,6 +20,7 @@ export const ReportModal = ({ isOpen, onClose, reportData, isLoading }: ReportMo
     switch (mood.toLowerCase()) {
       case 'positive':
       case 'happy':
+      case 'excited':
         return 'bg-green-500/20 text-green-300 border-green-400/30';
       case 'negative':
       case 'angry':
@@ -54,6 +30,7 @@ export const ReportModal = ({ isOpen, onClose, reportData, isLoading }: ReportMo
       case 'frustrated':
         return 'bg-orange-500/20 text-orange-300 border-orange-400/30';
       case 'neutral':
+      case 'calm':
         return 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30';
       default:
         return 'bg-slate-500/20 text-slate-300 border-slate-400/30';
@@ -67,7 +44,8 @@ export const ReportModal = ({ isOpen, onClose, reportData, isLoading }: ReportMo
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `conversation-report-${reportData.conversation_id}.md`;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+    a.download = `conversation-analysis-${timestamp}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

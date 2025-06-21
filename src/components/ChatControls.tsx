@@ -15,6 +15,8 @@ interface ChatControlsProps {
   onEscalate: () => void;
   onDeEscalate: () => void;
   onReport: () => void;
+  isLoading?: boolean;
+  isLoadingReport?: boolean;
 }
 
 const getAgentColor = (agent: string) => {
@@ -31,7 +33,9 @@ export const ChatControls = ({
   onToggleUserTurn,
   onEscalate,
   onDeEscalate,
-  onReport
+  onReport,
+  isLoading = false,
+  isLoadingReport = false
 }: ChatControlsProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -50,7 +54,12 @@ export const ChatControls = ({
             className="bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500" 
             onKeyDown={handleKeyDown} 
           />
-          <Button onClick={onUserMessage} size="sm" className="bg-blue-600/80 hover:bg-blue-600">
+          <Button 
+            onClick={onUserMessage} 
+            size="sm" 
+            className="bg-blue-600/80 hover:bg-blue-600 disabled:opacity-50"
+            disabled={isLoading || !userInput.trim()}
+          >
             <Send size={16} />
           </Button>
         </div>
@@ -59,27 +68,54 @@ export const ChatControls = ({
       {/* Action Buttons */}
       <div className="flex justify-between gap-2 px-0">
         <div className="flex gap-2">
-          <Button onClick={onEscalate} size="sm" className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200" variant="outline">
+          <Button 
+            onClick={onEscalate} 
+            size="sm" 
+            className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200 disabled:opacity-50" 
+            variant="outline"
+            disabled={isLoading}
+          >
             <TrendingUp size={16} className="mr-1" />
-            Escalate
+            {isLoading ? 'Processing...' : 'Escalate'}
           </Button>
-          <Button onClick={onDeEscalate} size="sm" className="bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 text-green-200" variant="outline">
+          <Button 
+            onClick={onDeEscalate} 
+            size="sm" 
+            className="bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 text-green-200 disabled:opacity-50" 
+            variant="outline"
+            disabled={isLoading}
+          >
             <TrendingDown size={16} className="mr-1" />
-            De-escalate
+            {isLoading ? 'Processing...' : 'De-escalate'}
           </Button>
         </div>
-        <Button onClick={onReport} size="sm" className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-200" variant="outline">
+        <Button 
+          onClick={onReport} 
+          size="sm" 
+          className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-200 disabled:opacity-50" 
+          variant="outline"
+          disabled={isLoadingReport}
+        >
           <BarChart3 size={16} className="mr-1" />
-          Report
+          {isLoadingReport ? 'Generating...' : 'Report'}
         </Button>
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={onNext} className="flex-1 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-600 hover:to-blue-600">
+        <Button 
+          onClick={onNext} 
+          className="flex-1 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-600 hover:to-blue-600 disabled:opacity-50"
+          disabled={isLoading}
+        >
           <SkipForward size={16} className="mr-2" />
-          Next ({currentAgent})
+          {isLoading ? 'Generating...' : `Next (${currentAgent})`}
         </Button>
-        <Button onClick={onToggleUserTurn} variant="outline" className="border-slate-600/50 text-slate-300 hover:bg-slate-700/50">
+        <Button 
+          onClick={onToggleUserTurn} 
+          variant="outline" 
+          className="border-slate-600/50 text-slate-300 hover:bg-slate-700/50 disabled:opacity-50"
+          disabled={isLoading}
+        >
           <User size={16} />
         </Button>
       </div>

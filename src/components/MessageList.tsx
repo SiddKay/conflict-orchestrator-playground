@@ -1,11 +1,11 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChatMessage } from './ChatMessage';
 
 interface Message {
   id: string;
   msg: string;
-  mood: 'positive' | 'neutral' | 'negative';
+  mood: 'positive' | 'neutral' | 'negative' | 'happy' | 'sad' | 'angry' | 'frustrated' | 'excited' | 'calm';
   agent: string;
   timestamp: Date;
 }
@@ -20,6 +20,7 @@ export const MessageList = ({ messages, selectedNodeId }: MessageListProps) => {
   const messageRefs = useRef<{
     [key: string]: HTMLDivElement | null;
   }>({});
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
@@ -44,17 +45,27 @@ export const MessageList = ({ messages, selectedNodeId }: MessageListProps) => {
   useEffect(() => {
     if (selectedNodeId && messageRefs.current[selectedNodeId]) {
       scrollToMessage(selectedNodeId);
+      
+      // Highlight the message for 2 seconds
+      setHighlightedMessageId(selectedNodeId);
+      const timer = setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
     }
   }, [selectedNodeId]);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3">
       {messages.map(message => {
-        const isHighlighted = selectedNodeId === message.id;
+        const isSelected = selectedNodeId === message.id;
+        const isHighlighted = highlightedMessageId === message.id;
         return (
           <ChatMessage
             key={message.id}
             message={message}
+            isSelected={isSelected}
             isHighlighted={isHighlighted}
             messageRef={(el) => messageRefs.current[message.id] = el}
           />
