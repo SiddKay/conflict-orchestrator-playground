@@ -92,6 +92,20 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
     });
   };
 
+  // Validation logic for save buttons
+  const isAgentAValid = formData.agentAName.trim() && 
+                       formData.agentATraits.trim() && 
+                       formData.agentAModel.trim() && 
+                       formData.agentABehavioralInstructions.trim();
+
+  const isAgentBValid = formData.agentBName.trim() && 
+                       formData.agentBTraits.trim() && 
+                       formData.agentBModel.trim() && 
+                       formData.agentBBehavioralInstructions.trim();
+
+  const isEnvironmentValid = formData.conversationSetting.trim() && 
+                            formData.scenario.trim();
+
   const isFormValid = formData.conversationSetting && formData.scenario && 
                      formData.agentAName && formData.agentBName;
 
@@ -179,8 +193,9 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
 
             <Button 
               onClick={handleSaveAgentA}
+              disabled={!isAgentAValid}
               size="sm"
-              className="bg-blue-600/80 hover:bg-blue-600 text-blue-100"
+              className="bg-blue-600/80 hover:bg-blue-600 text-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save size={14} className="mr-2" />
               Save Agent A
@@ -264,8 +279,9 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
 
             <Button 
               onClick={handleSaveAgentB}
+              disabled={!isAgentBValid}
               size="sm"
-              className="bg-purple-600/80 hover:bg-purple-600 text-purple-100"
+              className="bg-purple-600/80 hover:bg-purple-600 text-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save size={14} className="mr-2" />
               Save Agent B
@@ -304,8 +320,9 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
 
             <Button 
               onClick={handleSaveEnvironment}
+              disabled={!isEnvironmentValid}
               size="sm"
-              className="bg-slate-600/80 hover:bg-slate-600 text-slate-200"
+              className="bg-slate-600/80 hover:bg-slate-600 text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save size={14} className="mr-2" />
               Save Environment
