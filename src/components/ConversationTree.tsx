@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Users, ArrowDown } from 'lucide-react';
+import { Users, ArrowDown, GitBranch } from 'lucide-react';
 
 interface TreeNode {
   id: string;
@@ -61,6 +60,11 @@ export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSele
       setTreeData(mockTree);
     }
   }, [simulationStarted]);
+
+  const handleBranch = () => {
+    console.log('Branch button clicked');
+    // TODO: Implement branching logic
+  };
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
@@ -125,7 +129,7 @@ export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSele
   );
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       <div className="p-4 border-b border-slate-700/50">
         <div className="flex items-center gap-2 mb-2">
           <Users size={18} className="text-blue-400" />
@@ -136,7 +140,7 @@ export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSele
         </p>
       </div>
 
-      <div className="p-6 overflow-auto h-full">
+      <div className="flex-1 p-6 overflow-auto">
         {!simulationStarted ? (
           <div className="text-center py-12">
             <Users size={48} className="mx-auto text-slate-600 mb-4" />
@@ -160,6 +164,20 @@ export const ConversationTree = ({ simulationStarted, selectedNodeId, onNodeSele
           </div>
         )}
       </div>
+
+      {/* Branch Button at Bottom */}
+      {simulationStarted && (
+        <div className="p-4 border-t border-slate-700/50">
+          <Button
+            onClick={handleBranch}
+            className="w-full bg-green-600/80 hover:bg-green-600 text-green-100"
+            size="sm"
+          >
+            <GitBranch size={16} className="mr-2" />
+            Branch
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
