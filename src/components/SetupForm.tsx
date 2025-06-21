@@ -8,12 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Play, Bot, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface SetupFormProps {
   onStart: () => void;
 }
 
 export const SetupForm = ({ onStart }: SetupFormProps) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     conversationSetting: '',
     scenario: '',
@@ -51,6 +53,11 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
       conversationSetting: formData.conversationSetting,
       scenario: formData.scenario
     });
+    
+    toast({
+      title: "Success",
+      description: "Environment settings saved successfully!",
+    });
   };
 
   const handleSaveAgentA = () => {
@@ -62,6 +69,11 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
       behavioralInstructions: formData.agentABehavioralInstructions,
       temperature: formData.agentATemperature[0]
     });
+    
+    toast({
+      title: "Success",
+      description: "Agent A configuration saved successfully!",
+    });
   };
 
   const handleSaveAgentB = () => {
@@ -72,6 +84,11 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
       model: formData.agentBModel,
       behavioralInstructions: formData.agentBBehavioralInstructions,
       temperature: formData.agentBTemperature[0]
+    });
+    
+    toast({
+      title: "Success",
+      description: "Agent B configuration saved successfully!",
     });
   };
 
@@ -85,46 +102,6 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
           <h3 className="text-lg font-semibold text-slate-200 mb-2">Simulation Setup</h3>
           <p className="text-sm text-slate-400">Configure your AI agents and conflict scenario</p>
         </div>
-
-        <Card className="bg-slate-800/50 border-slate-700/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-slate-300">Environment Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="setting" className="text-slate-300 text-xs">General Conversation Setting</Label>
-              <Textarea
-                id="setting"
-                placeholder="e.g., Personal disagreement between two partners..."
-                value={formData.conversationSetting}
-                onChange={(e) => handleInputChange('conversationSetting', e.target.value)}
-                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="scenario" className="text-slate-300 text-xs">Exact Conversation Scenario</Label>
-              <Textarea
-                id="scenario"
-                placeholder="e.g., A and B are currently fighting about going out to eat for their anniversary..."
-                value={formData.scenario}
-                onChange={(e) => handleInputChange('scenario', e.target.value)}
-                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
-                rows={3}
-              />
-            </div>
-
-            <Button 
-              onClick={handleSaveEnvironment}
-              size="sm"
-              className="bg-slate-600/80 hover:bg-slate-600 text-slate-200"
-            >
-              <Save size={14} className="mr-2" />
-              Save Environment
-            </Button>
-          </CardContent>
-        </Card>
 
         <Card className="bg-slate-800/50 border-slate-700/50">
           <CardHeader className="pb-3">
@@ -292,6 +269,46 @@ export const SetupForm = ({ onStart }: SetupFormProps) => {
             >
               <Save size={14} className="mr-2" />
               Save Agent B
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-slate-700/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm text-slate-300">Environment Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="setting" className="text-slate-300 text-xs">General Conversation Setting</Label>
+              <Textarea
+                id="setting"
+                placeholder="e.g., Personal disagreement between two partners..."
+                value={formData.conversationSetting}
+                onChange={(e) => handleInputChange('conversationSetting', e.target.value)}
+                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="scenario" className="text-slate-300 text-xs">Exact Conversation Scenario</Label>
+              <Textarea
+                id="scenario"
+                placeholder="e.g., A and B are currently fighting about going out to eat for their anniversary..."
+                value={formData.scenario}
+                onChange={(e) => handleInputChange('scenario', e.target.value)}
+                className="mt-1 bg-slate-700/50 border-slate-600/50 text-slate-200 placeholder:text-slate-500"
+                rows={3}
+              />
+            </div>
+
+            <Button 
+              onClick={handleSaveEnvironment}
+              size="sm"
+              className="bg-slate-600/80 hover:bg-slate-600 text-slate-200"
+            >
+              <Save size={14} className="mr-2" />
+              Save Environment
             </Button>
           </CardContent>
         </Card>
