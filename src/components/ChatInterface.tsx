@@ -202,15 +202,17 @@ export const ChatInterface = ({
           </div> : null}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 px-0">
-          <Button onClick={handleEscalate} size="sm" className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200" variant="outline">
-            <TrendingUp size={16} className="mr-1" />
-            Escalate
-          </Button>
-          <Button onClick={handleDeEscalate} size="sm" className="bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 text-green-200" variant="outline">
-            <TrendingDown size={16} className="mr-1" />
-            De-escalate
-          </Button>
+        <div className="flex justify-between gap-2 px-0">
+          <div className="flex gap-2">
+            <Button onClick={handleEscalate} size="sm" className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200" variant="outline">
+              <TrendingUp size={16} className="mr-1" />
+              Escalate
+            </Button>
+            <Button onClick={handleDeEscalate} size="sm" className="bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 text-green-200" variant="outline">
+              <TrendingDown size={16} className="mr-1" />
+              De-escalate
+            </Button>
+          </div>
           <Button onClick={handleSummarize} size="sm" className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-200" variant="outline">
             <FileText size={16} className="mr-1" />
             Summarize
