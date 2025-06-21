@@ -20,9 +20,9 @@ export const RightSidebar = ({ simulationStarted, onSimulationStart, selectedNod
   };
 
   return (
-    <div className="h-full bg-slate-900/50 backdrop-blur-sm">
+    <div className="h-screen bg-slate-900/50 backdrop-blur-sm flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-        <div className="border-b border-slate-700/50 p-4">
+        <div className="border-b border-slate-700/50 p-4 flex-shrink-0">
           <TabsList className="grid w-full grid-cols-2 bg-slate-800/50">
             <TabsTrigger 
               value="setup" 

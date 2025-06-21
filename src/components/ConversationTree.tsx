@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Users, ArrowDown, GitBranch } from 'lucide-react';
+
 interface TreeNode {
   id: string;
   message: string;
@@ -109,32 +110,42 @@ export const ConversationTree = ({
             </div> : renderNode(node.children[0], level + 1)}
         </div>}
     </div>;
-  return <div className="h-full flex flex-col">
-      
-
+  return (
+    <div className="h-full flex flex-col">
       <div className="flex-1 p-6 overflow-auto">
-        {!simulationStarted ? <div className="text-center py-12">
+        {!simulationStarted ? (
+          <div className="text-center py-12">
             <Users size={48} className="mx-auto text-slate-600 mb-4" />
             <p className="text-slate-400 text-sm">
               Start a simulation to see the conversation tree
             </p>
-          </div> : <div className="flex justify-center">
-            {treeData.length > 0 ? <div className="space-y-4">
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            {treeData.length > 0 ? (
+              <div className="space-y-4">
                 {treeData.map(node => renderNode(node))}
-              </div> : <div className="text-center py-8">
+              </div>
+            ) : (
+              <div className="text-center py-8">
                 <p className="text-slate-400 text-sm">
                   Conversation tree will appear here...
                 </p>
-              </div>}
-          </div>}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Branch Button at Bottom */}
-      {simulationStarted && <div className="p-4 border-t border-slate-700/50">
+      {simulationStarted && (
+        <div className="p-4 border-t border-slate-700/50 flex-shrink-0">
           <Button onClick={handleBranch} className="w-full bg-green-600/80 hover:bg-green-600 text-green-100" size="sm">
             <GitBranch size={16} className="mr-2" />
             Branch
           </Button>
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
