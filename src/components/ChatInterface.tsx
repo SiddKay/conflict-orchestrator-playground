@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, SkipForward, User } from 'lucide-react';
+import { Send, SkipForward, User, TrendingUp, TrendingDown, FileText } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -113,6 +112,48 @@ export const ChatInterface = ({ simulationStarted, selectedNodeId }: ChatInterfa
     setIsUserTurn(false);
   };
 
+  const handleEscalate = () => {
+    // TODO: Connect to appropriate API endpoint for escalation
+    console.log('Escalate button clicked');
+  };
+
+  const handleDeEscalate = () => {
+    // TODO: Connect to appropriate API endpoint for de-escalation
+    console.log('De-escalate button clicked');
+  };
+
+  const handleSummarize = () => {
+    // TODO: Fetch actual summary content from API endpoint
+    const placeholderMarkdown = `# Conversation Summary
+
+## Participants
+- Alice
+- Bob
+
+## Key Points
+- Discussion about anniversary dinner location
+- Preference differences regarding Italian cuisine
+- Communication style analysis
+
+## Mood Analysis
+- Initial positive sentiment
+- Shift to negative sentiment
+- Neutral resolution attempt
+
+*This is placeholder content. Replace with actual API data.*
+`;
+
+    const blob = new Blob([placeholderMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'summary.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (!simulationStarted) {
     return (
       <div className="h-full flex items-center justify-center text-center p-8">
@@ -186,6 +227,37 @@ export const ChatInterface = ({ simulationStarted, selectedNodeId }: ChatInterfa
             </Button>
           </div>
         ) : null}
+
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleEscalate}
+            size="sm"
+            className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200"
+            variant="outline"
+          >
+            <TrendingUp size={16} className="mr-1" />
+            Escalate
+          </Button>
+          <Button 
+            onClick={handleDeEscalate}
+            size="sm"
+            className="bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 text-green-200"
+            variant="outline"
+          >
+            <TrendingDown size={16} className="mr-1" />
+            De-escalate
+          </Button>
+          <Button 
+            onClick={handleSummarize}
+            size="sm"
+            className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-200"
+            variant="outline"
+          >
+            <FileText size={16} className="mr-1" />
+            Summarize
+          </Button>
+        </div>
 
         <div className="flex gap-2">
           <Button 
