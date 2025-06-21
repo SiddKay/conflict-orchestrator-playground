@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Download, TrendingUp, TrendingDown, MessageSquare, BarChart3 } from 'lucide-react';
-import { ConversationAnalysis } from '@/types/models';
+import { ConversationAnalysis, MoodEnum } from '@/types/models';
+import { getChatMessageColors } from '@/lib/colorMapping';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -17,23 +18,21 @@ interface ReportModalProps {
 
 export const ReportModal = ({ isOpen, onClose, reportData, isLoading }: ReportModalProps) => {
   const getMoodColor = (mood: string) => {
-    switch (mood.toLowerCase()) {
-      case 'positive':
-      case 'happy':
-      case 'excited':
-        return 'bg-green-500/20 text-green-300 border-green-400/30';
-      case 'negative':
-      case 'angry':
-        return 'bg-red-500/20 text-red-300 border-red-400/30';
-      case 'sad':
-        return 'bg-blue-500/20 text-blue-300 border-blue-400/30';
-      case 'frustrated':
-        return 'bg-orange-500/20 text-orange-300 border-orange-400/30';
-      case 'neutral':
-      case 'calm':
-        return 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30';
-      default:
-        return 'bg-slate-500/20 text-slate-300 border-slate-400/30';
+    // Convert mood string to MoodEnum and use centralized color mapping
+    const moodEnum = mood as MoodEnum;
+    const colors = getChatMessageColors(moodEnum);
+    
+    // Convert to badge-appropriate colors (text colors instead of background)
+    if (colors.includes('green')) {
+      return 'bg-green-500/20 text-green-300 border-green-400/30';
+    } else if (colors.includes('yellow')) {
+      return 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30';
+    } else if (colors.includes('orange')) {
+      return 'bg-orange-500/20 text-orange-300 border-orange-400/30';
+    } else if (colors.includes('red')) {
+      return 'bg-red-500/20 text-red-300 border-red-400/30';
+    } else {
+      return 'bg-slate-500/20 text-slate-300 border-slate-400/30';
     }
   };
 

@@ -1,10 +1,12 @@
 
 import React from 'react';
+import { MoodEnum } from '@/types/models';
+import { getChatMessageColors, getMoodAccentClasses } from '@/lib/colorMapping';
 
 interface Message {
   id: string;
   msg: string;
-  mood: 'positive' | 'neutral' | 'negative' | 'happy' | 'sad' | 'angry' | 'frustrated' | 'excited' | 'calm';
+  mood: MoodEnum;
   agent: string;
   timestamp: Date;
 }
@@ -16,30 +18,11 @@ interface ChatMessageProps {
   messageRef: (el: HTMLDivElement | null) => void;
 }
 
-const getMoodColor = (mood: string, isSelected: boolean = false, isHighlighted: boolean = false) => {
-  const baseColor = (() => {
-    switch (mood) {
-      case 'positive':
-      case 'happy':
-      case 'excited':
-        return 'bg-green-500/20 border-green-400/30 text-green-100';
-      case 'negative':
-      case 'angry':
-        return 'bg-red-500/20 border-red-400/30 text-red-100';
-      case 'sad':
-        return 'bg-blue-500/20 border-blue-400/30 text-blue-100';
-      case 'frustrated':
-        return 'bg-orange-500/20 border-orange-400/30 text-orange-100';
-      case 'neutral':
-      case 'calm':
-        return 'bg-yellow-500/20 border-yellow-400/30 text-yellow-100';
-      default:
-        return 'bg-slate-500/20 border-slate-400/30 text-slate-100';
-    }
-  })();
+const getMoodColor = (mood: MoodEnum, isSelected: boolean = false, isHighlighted: boolean = false) => {
+  const baseColor = getChatMessageColors(mood);
   
   if (isHighlighted) {
-    return `${baseColor} ring-4 ring-blue-400/60 ring-pulse animate-pulse scale-[1.05] shadow-lg shadow-blue-400/20`;
+    return `${baseColor} ring-4 ring-blue-400/60 ring-pulse animate-pulse scale-[1.05]`;
   }
   if (isSelected) {
     return `${baseColor} ring-2 ring-blue-400/50 scale-[1.02]`;
@@ -54,15 +37,20 @@ const getAgentColor = (agent: string) => {
 };
 
 export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: ChatMessageProps) => {
+  const moodAccents = getMoodAccentClasses(message.mood);
+  
   return (
     <div 
       ref={messageRef}
       data-message-id={message.id}
       className={`
-        p-3 rounded-lg border transition-all duration-300 hover:scale-[1.01]
+        p-3 rounded-lg transition-all duration-300 hover:scale-[1.01] relative overflow-hidden
         ${getMoodColor(message.mood, isSelected, isHighlighted)}
       `}
     >
+      {/* Mood indicator dot */}
+      <div className={`absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br ${moodAccents.gradient} animate-pulse`} />
+      
       <div className="flex items-center gap-2 mb-2">
         <div className={`font-medium text-sm ${getAgentColor(message.agent)}`}>
           {message.agent}
@@ -71,7 +59,7 @@ export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: 
           {message.timestamp.toLocaleTimeString()}
         </div>
       </div>
-      <p className="text-sm leading-relaxed">{message.msg}</p>
+      <p className="text-sm leading-relaxed pr-6">{message.msg}</p>
     </div>
   );
 };

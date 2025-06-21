@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Users, ArrowDown, GitBranch } from 'lucide-react';
 import { useConversationContext } from '@/contexts/ConversationContext';
 import { ConversationNode, MoodEnum } from '@/types/models';
+import { getTreeNodeColors, getArrowColor, getTreeNodeRingColor } from '@/lib/colorMapping';
 
 interface TreeNode {
   id: string;
@@ -61,40 +62,6 @@ export const ConversationTree = ({
       setIsBranching(false);
     }
   };
-  const getMoodColor = (mood: MoodEnum) => {
-    switch (mood) {
-      case 'happy':
-      case 'excited':
-        return 'bg-green-500 border-green-400';
-      case 'angry':
-      case 'frustrated':
-        return 'bg-red-500 border-red-400';
-      case 'sad':
-        return 'bg-blue-500 border-blue-400';
-      case 'neutral':
-      case 'calm':
-        return 'bg-yellow-500 border-yellow-400';
-      default:
-        return 'bg-slate-500 border-slate-400';
-    }
-  };
-  const getArrowColor = (mood: MoodEnum) => {
-    switch (mood) {
-      case 'happy':
-      case 'excited':
-        return 'text-green-400';
-      case 'angry':
-      case 'frustrated':
-        return 'text-red-400';
-      case 'sad':
-        return 'text-blue-400';
-      case 'neutral':
-      case 'calm':
-        return 'text-yellow-400';
-      default:
-        return 'text-slate-400';
-    }
-  };
   const renderNode = (treeNode: TreeNode, level: number = 0) => {
     const handleNodeClick = () => {
       onNodeSelect(treeNode.id);
@@ -116,14 +83,17 @@ export const ConversationTree = ({
       <div key={treeNode.id} className="flex flex-col items-center">
         {/* Circular Node */}
         <div className="flex flex-col items-center">
-          <Button variant="ghost" size="sm" onClick={handleNodeClick} className={`
-              w-12 h-12 rounded-full border-2 p-0 transition-all duration-200 text-white font-bold text-sm
+          <div 
+            onClick={handleNodeClick} 
+            className={`
+              w-12 h-12 rounded-full border-2 p-0 transition-all duration-200 text-slate-100 font-bold text-sm
+              flex items-center justify-center cursor-pointer
               ${selectedNodeId === treeNode.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
-              ${getMoodColor(treeNode.node.message.mood)}
-              hover:scale-105 hover:shadow-lg
+              ${getTreeNodeColors(treeNode.node.message.mood)}
+              hover:scale-105
             `}>
             {level + 1}
-          </Button>
+          </div>
           
           {/* Agent Label */}
           <span className="text-xs text-slate-400 mt-1">{agentName}</span>
