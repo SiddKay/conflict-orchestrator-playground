@@ -26,7 +26,8 @@ export const ChatInterface = ({
     generateNextResponse, 
     sendUserMessage, 
     applyIntervention,
-    loading
+    loading,
+    interventionMessages
   } = useConversationContext();
   
   const [userInput, setUserInput] = useState('');
@@ -131,7 +132,9 @@ export const ChatInterface = ({
               msg: msg.msg,
               mood: msg.mood,
               agent: agentName,
-              timestamp: new Date(msg.timestamp)
+              timestamp: new Date(msg.timestamp),
+              is_user_override: msg.is_user_override,
+              intervention_type: interventionMessages[msg.id]
             };
           })} 
           selectedNodeId={selectedNodeId} 

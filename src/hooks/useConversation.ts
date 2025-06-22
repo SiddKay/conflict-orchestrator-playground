@@ -13,6 +13,7 @@ interface ConversationState {
   currentNodeId: string | null;
   loading: boolean;
   error: string | null;
+  interventionMessages: Record<string, 'escalate' | 'de_escalate'>;
 }
 
 export const useConversation = () => {
@@ -24,6 +25,7 @@ export const useConversation = () => {
     currentNodeId: null,
     loading: false,
     error: null,
+    interventionMessages: {},
   });
 
   const setLoading = (loading: boolean) => {
@@ -105,6 +107,7 @@ export const useConversation = () => {
         currentNodeId: null,
         loading: false,
         error: null,
+        interventionMessages: {},
       });
 
       toast({
@@ -209,6 +212,10 @@ export const useConversation = () => {
         currentPath: response.current_path,
         currentNodeId: response.node_id,
         loading: false,
+        interventionMessages: {
+          ...prev.interventionMessages,
+          [response.message.id]: type
+        }
       }));
 
       // Refresh the tree

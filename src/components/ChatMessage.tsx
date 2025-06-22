@@ -2,6 +2,7 @@
 import React from 'react';
 import { MoodEnum } from '@/types/models';
 import { getChatMessageColors, getMoodAccentClasses } from '@/lib/colorMapping';
+import { TrendingUp, TrendingDown, User } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -9,6 +10,8 @@ interface Message {
   mood: MoodEnum;
   agent: string;
   timestamp: Date;
+  is_user_override?: boolean;
+  intervention_type?: 'escalate' | 'de_escalate';
 }
 
 interface ChatMessageProps {
@@ -36,8 +39,40 @@ const getAgentColor = (agent: string) => {
   return hash % 2 === 0 ? 'text-blue-300' : 'text-purple-300';
 };
 
+const getInterventionIndicator = (message: Message) => {
+  if (message.is_user_override) {
+    return (
+      <div className="flex items-center gap-1 px-2 py-1 bg-blue-600/20 border border-blue-500/30 rounded-md text-blue-300">
+        <User size={12} />
+        <span className="text-xs font-medium">Custom</span>
+      </div>
+    );
+  }
+  
+  if (message.intervention_type === 'escalate') {
+    return (
+      <div className="flex items-center gap-1 px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-md text-red-300">
+        <TrendingUp size={12} />
+        <span className="text-xs font-medium">Escalated</span>
+      </div>
+    );
+  }
+  
+  if (message.intervention_type === 'de_escalate') {
+    return (
+      <div className="flex items-center gap-1 px-2 py-1 bg-green-600/20 border border-green-500/30 rounded-md text-green-300">
+        <TrendingDown size={12} />
+        <span className="text-xs font-medium">De-escalated</span>
+      </div>
+    );
+  }
+  
+  return null;
+};
+
 export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: ChatMessageProps) => {
   const moodAccents = getMoodAccentClasses(message.mood);
+  const interventionIndicator = getInterventionIndicator(message);
   
   return (
     <div 
@@ -64,6 +99,14 @@ export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: 
           {message.timestamp.toLocaleTimeString()}
         </div>
       </div>
+      
+      {/* Intervention indicator */}
+      {interventionIndicator && (
+        <div className="mb-2">
+          {interventionIndicator}
+        </div>
+      )}
+      
       <p className="text-sm leading-relaxed pr-20">{message.msg}</p>
     </div>
   );
