@@ -19,4 +19,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['three'],
+    exclude: ['@met4citizen/talkinghead']
+  },
+  build: {
+    rollupOptions: {
+      external: [],
+    }
+  },
+  assetsInclude: ['**/*.glb', '**/*.gltf', '**/*.fbx']
 }));
