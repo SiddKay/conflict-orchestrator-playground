@@ -48,8 +48,13 @@ export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: 
         ${getMoodColor(message.mood, isSelected, isHighlighted)}
       `}
     >
-      {/* Mood indicator dot */}
-      <div className={`absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br ${moodAccents.gradient} animate-pulse`} />
+      {/* Mood indicator with dot and text */}
+      <div className="absolute top-3 right-3 flex items-center gap-2">
+        <span className={`text-xs font-medium capitalize ${moodAccents.border.replace('border-l-', 'text-')} opacity-80`}>
+          {message.mood}
+        </span>
+        <div className={`w-3 h-3 rounded-full bg-gradient-to-br ${moodAccents.gradient} animate-pulse shadow-sm`} />
+      </div>
       
       <div className="flex items-center gap-2 mb-2">
         <div className={`font-medium text-sm ${getAgentColor(message.agent)}`}>
@@ -59,7 +64,7 @@ export const ChatMessage = ({ message, isSelected, isHighlighted, messageRef }: 
           {message.timestamp.toLocaleTimeString()}
         </div>
       </div>
-      <p className="text-sm leading-relaxed pr-6">{message.msg}</p>
+      <p className="text-sm leading-relaxed pr-20">{message.msg}</p>
     </div>
   );
 };
