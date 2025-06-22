@@ -20,7 +20,7 @@ export const ConversationTree = ({
   selectedNodeId,
   onNodeSelect
 }: ConversationTreeProps) => {
-  const { conversationTree, selectNode, branchFromNode } = useConversationContext();
+  const { conversationTree, selectNode, branchFromNode, currentPath, currentNodeId } = useConversationContext();
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
   const [isBranching, setIsBranching] = useState(false);
 
@@ -49,6 +49,12 @@ export const ConversationTree = ({
       setTreeData(trees);
     }
   }, [conversationTree]);
+
+  // Helper function to check if a node is in the active path
+  const isNodeInActivePath = (nodeId: string): boolean => {
+    return currentPath.some(message => message.id === nodeId) || nodeId === currentNodeId;
+  };
+
   const handleBranch = async () => {
     if (!selectedNodeId) return;
     
@@ -79,6 +85,9 @@ export const ConversationTree = ({
       ? conversationTree.setup.agent_a.name 
       : conversationTree?.setup.agent_b.name || 'Unknown';
 
+    // Check if this node is in the active path
+    const isInActivePath = isNodeInActivePath(treeNode.node.message.id);
+
     return (
       <div key={treeNode.id} className="flex flex-col items-center">
         {/* Circular Node */}
@@ -90,19 +99,22 @@ export const ConversationTree = ({
               flex items-center justify-center cursor-pointer
               ${selectedNodeId === treeNode.id ? 'ring-2 ring-blue-400/50 scale-110' : ''}
               ${getTreeNodeColors(treeNode.node.message.mood)}
+              ${!isInActivePath ? 'opacity-40' : 'opacity-100'}
               hover:scale-105
             `}>
             {level + 1}
           </div>
           
           {/* Agent Label */}
-          <span className="text-xs text-slate-400 mt-1">{agentName}</span>
+          <span className={`text-xs mt-1 ${!isInActivePath ? 'text-slate-500 opacity-40' : 'text-slate-400'}`}>
+            {agentName}
+          </span>
         </div>
 
         {/* Arrow and Children */}
         {treeNode.children.length > 0 && (
           <div className="flex flex-col items-center mt-2">
-            <ArrowDown size={16} className={`${getArrowColor(treeNode.children[0]?.node.message.mood || 'neutral')} mb-2`} />
+            <ArrowDown size={16} className={`${getArrowColor(treeNode.children[0]?.node.message.mood || 'neutral')} mb-2 ${!isInActivePath ? 'opacity-40' : 'opacity-100'}`} />
             
             {/* Multiple children - branch layout */}
             {treeNode.children.length > 1 ? (
@@ -158,7 +170,7 @@ export const ConversationTree = ({
             size="sm"
           >
             <GitBranch size={16} className="mr-2" />
-            {isBranching ? 'Branching...' : 'Branch'}
+            {isBranching ? 'Switching Branch...' : 'Switch Branch'}
           </Button>
         </div>
       )}
